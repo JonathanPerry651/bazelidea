@@ -1,0 +1,37 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+load("//src/bazelidea:codegen.bzl", "codegen", "make_a_ref")
+
+codegen(
+    name = "TheCodegen",
+    package = "foo.bar.baz",
+)
+
+codegen(
+    name = "AnotherCodegen",
+    package = "blim.blam.blom",
+)
+
+make_a_ref(
+    name = "guava_ref",
+    clazz = "CacheLoader",
+    package = "com.google.common.cache",
+    where_to_find_it = "@maven//:com_google_guava_guava",
+)
+
+codegen(
+    name = "AThirdCodeGen",
+    package = "wibble.wobble",
+    references = [
+        "AnotherCodegen",
+        "guava_ref",
+    ],
+)
+
+java_binary(
+    name = "Example",
+    srcs = ["Example.java"],
+    deps = [
+        "AThirdCodeGen",
+        "TheCodegen",
+    ],
+)
